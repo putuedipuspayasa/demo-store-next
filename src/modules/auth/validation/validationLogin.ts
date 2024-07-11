@@ -1,6 +1,4 @@
-// src/modules/auth/utils/validationUtils.ts
-
-export interface ValidationErrors {
+export interface ValidationErrorLogin {
   email?: string;
   password?: string;
 }
@@ -8,8 +6,8 @@ export interface ValidationErrors {
 export const validateLoginForm = (
   email: string,
   password: string
-): ValidationErrors => {
-  const errors: ValidationErrors = {};
+): ValidationErrorLogin => {
+  const errors: ValidationErrorLogin = {};
 
   if (!email.trim()) {
     errors.email = "Email is required";

@@ -48,8 +48,14 @@ const ErrorComponent: React.FC<ErrorComponentProps> = ({ type, message }) => {
   }
 
   return (
-    <div className={`border ${borderColorClass} ${bgColorClass} text-center border-dashed border-r-2 border-l-2 mb-3 py-2`} role="alert">
-      <p className={`${textColorClass} font-semibold text-center`}>{icon} {message}</p>
+    // <div className={`border ${borderColorClass} ${bgColorClass} text-center border-dashed border-r-2 border-l-2 mb-3 py-2`} role="alert">
+    //   <p className={`${textColorClass} font-semibold text-center`}>{icon} {message}</p>
+    // </div>
+
+    <div className={`border-l-4 p-4 ${bgColorClass} ${borderColorClass} rounded-md border-l-2 mb-3 py-2`} role="alert">
+      <p className={`font-medium ${textColorClass}`}>
+        <span className="mr-2">{icon}</span> &nbsp;{message}
+      </p>
     </div>
   );
 };

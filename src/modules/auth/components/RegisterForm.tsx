@@ -5,12 +5,15 @@ import ErrorToast from '@/pkg/components/error/ErrorToast';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { loginService } from '../services/loginService';
-import { validateLoginForm } from '../validation/validationLogin';
+import { registerService } from '../services/registerService';
+import { validateRegisterForm } from '../validation/validationRegister';
 
-const LoginForm = () => {
+const RegisterForm = () => {
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [passwordConfirm, setPasswordConfirm] = useState('');
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ [key: string]: any }>({});
   const router = useRouter();
@@ -22,7 +25,7 @@ const LoginForm = () => {
     setErrors({});
     setErrorMessage('');
 
-    const validationErrors = validateLoginForm(email, password);
+    const validationErrors = validateRegisterForm({ name: name, email: email, phone: phone, password: password, password_confirm: passwordConfirm });
     if (Object.keys(validationErrors).length > 0) {
       console.log("errors: " + Object.keys(validationErrors).length);
       setErrors(validationErrors);
@@ -31,12 +34,15 @@ const LoginForm = () => {
     }
 
     try {
-      console.log("login");
-      await loginService.login({
-        username: email,
-        password: password
+      console.log("register");
+      await registerService.register({
+        name: name,
+        phone: phone,
+        email: email,
+        password: password,
+        create_company: true,
       }); // Use the constant
-      router.push('/dashboard');
+      router.push('/register/success');
     } catch (error: any) {
       setErrorMessage(error.message);
     } finally {
@@ -47,8 +53,40 @@ const LoginForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {errorMessage && <ErrorComponent message={errorMessage} type="error" />}
       {errorMessage && <ErrorToast type="error" message={errorMessage} />}
+      {errorMessage && <ErrorComponent message={errorMessage} type="error" />}
+      <div className="mb-4">
+        <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
+          Name
+        </label>
+        <input
+          id="name"
+          type="name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          disabled={loading}
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.name ? 'border-red-500' : 'border-gray-300'
+            }`}
+        />
+        {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+      </div>
+
+      <div className="mb-4">
+        <label htmlFor="phone" className="block text-gray-700 text-sm font-bold mb-2">
+          Phone
+        </label>
+        <input
+          id="phone"
+          type="phone"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value)}
+          disabled={loading}
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.phone ? 'border-red-500' : 'border-gray-300'
+            }`}
+        />
+        {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+      </div>
+
       <div className="mb-4">
         <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
           Email
@@ -64,6 +102,7 @@ const LoginForm = () => {
         />
         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
       </div>
+
       <div className="mb-6">
         <label htmlFor="password" className="block text-gray-700 text-sm font-bold mb-2">
           Password
@@ -80,25 +119,36 @@ const LoginForm = () => {
         />
         {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password}</p>}
       </div>
+
+      <div className="mb-6">
+        <label htmlFor="passwordConfirm" className="block text-gray-700 text-sm font-bold mb-2">
+          Confirm Password
+        </label>
+        <input
+          id="passwordConfirm"
+          type="password"
+          value={passwordConfirm}
+          onChange={(e) => setPasswordConfirm(e.target.value)}
+
+          disabled={loading}
+          className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${errors.passwordConfirm ? 'border-red-500' : 'border-gray-300'
+            }`}
+        />
+        {errors.passwordConfirm && <p className="text-red-500 text-xs mt-1">{errors.passwordConfirm}</p>}
+      </div>
       <div className="flex items-center justify-between">
-        <Link href="/forgot-password" className="text-blue-500 hover:text-blue-700">Forgot Password ?</Link>
+        <Link href="/login" className="text-blue-500 hover:text-blue-700">Login</Link>
         <button
           type="submit"
           disabled={loading}
           className={`bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ${loading ? 'opacity-50 cursor-not-allowed' : ''
             }`}
         >
-          {loading ? 'Loading...' : 'Login'}
+          {loading ? 'Loading...' : 'Register'}
         </button>
-      </div>
-      <div className='mt-4 mb-2'>
-        <hr />
-      </div>
-      <div className="flex center mt-4">
-        Don't have account?&nbsp;<Link href="/register" className="text-blue-500 hover:text-blue-700">Register</Link>&nbsp;now
       </div>
     </form>
   );
 };
 
-export default LoginForm;
+export default RegisterForm;
